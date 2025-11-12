@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+}
+
+/* ==== Full-rectangle liquid progress =============================== */
+.water-card{
+  --radius: 28px;
+  --water: #1b87df;
+  --water-deep: #31b4ff;
+  --fill: 0%;
+
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #68a4d5 0%, #6fb0df 50%, #75b6e4 100%);
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  width: 100%;
+  height: 100%;
+  position: relative;
+  color: #ffffff;
+}
+
+.water-card::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+  pointer-events: none;
+}
+
+.wave-clip{
+  overflow: hidden;
+  border-radius: var(--radius);
+  position: absolute;
+  inset: 0;
+}
+
+.wave-fill{
+  position: absolute;
+  inset: 0;
+  transform: translateY(calc(100% - var(--fill)));
+  transition: transform 0.6s ease;
+  will-change: transform;
+  background: linear-gradient(180deg, rgba(27,135,223,0.98) 0%, rgba(27,135,223,0.9) 55%, rgba(27,135,223,0.82) 100%);
+  overflow: hidden;
+}
+
+.wave-static{
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 55%, rgba(255,255,255,0.02) 100%);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.wave-crest{
+  position: absolute;
+  inset: -18px 0 auto;
+  width: 100%;
+  height: 48px;
+  background: radial-gradient(120% 80% at 20% 60%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.25) 65%, transparent 75%),
+    radial-gradient(120% 90% at 60% 50%, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.2) 70%, transparent 80%);
+  mask-image: radial-gradient(80% 120% at 50% -20%, rgba(0,0,0,0.9) 45%, rgba(0,0,0,0) 100%);
+  filter: blur(12px);
+  opacity: 0.9;
+}
+
+@layer components {
+  .card {@apply bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm dark:bg-slate-900 dark:border-slate-800; }
+  .btn {@apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary {@apply btn bg-gradient-to-r from-water-600 to-water-500 text-white shadow-sm hover:shadow md:hover:scale-[1.01]; }
+  .btn-secondary {@apply btn border border-slate-300 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:hover:bg-slate-800; }
+  .btn-link {@apply text-sm text-slate-600 underline underline-offset-4 hover:text-slate-900 dark:text-slate-300; }
+  .input {@apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-water-400 dark:bg-slate-800 dark:border-slate-700; }
+  .label {
+    @apply text-sm text-slate-600 dark:text-slate-300;
+  }
+}
