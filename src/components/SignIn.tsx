@@ -10,13 +10,11 @@ export default function SignIn() {
   const [signinEmail, setSigninEmail] = React.useState('')
   const [signinCode, setSigninCode] = React.useState('')
   const [signinStep, setSigninStep] = React.useState<Step>('details')
-
   const [signupEmail, setSignupEmail] = React.useState('')
   const [signupName, setSignupName] = React.useState('')
   const [signupAge, setSignupAge] = React.useState<number | ''>('')
   const [signupCode, setSignupCode] = React.useState('')
   const [signupStep, setSignupStep] = React.useState<Step>('details')
-
   const [error, setError] = React.useState<string | null>(null)
   const [loading, setLoading] = React.useState(false)
 
@@ -94,108 +92,132 @@ export default function SignIn() {
     }
   }
 
+  const title = view === 'signin' ? 'Welcome back' : 'Create your account'
+  const subtitle =
+    view === 'signin'
+      ? 'Use your email to receive a secure sign-in code.'
+      : 'Set up a profile so your hydration data stays attached to you.'
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-water-200 via-cyan-200 to-water-300 px-4 py-10 flex items-center justify-center">
-      <div className="flex w-full max-w-5xl rounded-3xl shadow-lg overflow-hidden bg-white">
-        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-water-600 via-water-500 to-water-400 text-white p-10 flex-col justify-center gap-6">
-          <div>
-            <h2 className="text-4xl font-semibold">Stay hydrated effortlessly</h2>
+    <div className="min-h-screen px-4 py-10">
+      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl items-center gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="panel panel-dark overflow-hidden">
+          <div className="space-y-6">
+            <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
+              Hydra
+            </div>
+            <div>
+              <h1 className="max-w-xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                Hydration tracking with less noise and more clarity
+              </h1>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-white/70 sm:text-base">
+                Log water quickly, keep your goal visible, and review progress in a cleaner workspace built for everyday use.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Feature title="Daily logging" copy="Fast entry flow for quick check-ins." />
+              <Feature title="Reminder support" copy="Simple browser-based nudges." />
+              <Feature title="Progress review" copy="A calm dashboard with focused analytics." />
+            </div>
           </div>
-          <p className="text-water-50/90">
-            Track your daily intake, set reminders, and visualize progress with a minimal interface designed for everyday momentum.
-          </p>
-        </div>
-        <div className="w-full md:w-1/2 p-8">
-          <div className="text-center mb-6">
-            <div className="text-3xl font-semibold tracking-tight text-water-600">
-              {view === 'signin' ? 'Welcome back' : 'Create account'}
+        </section>
+
+        <section className="panel mx-auto w-full max-w-xl">
+          <div className="space-y-3">
+            <div className="inline-flex rounded-full border border-water-200 bg-water-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-water-700 dark:border-water-800 dark:bg-water-500/10 dark:text-water-200">
+              {view === 'signin' ? 'Sign in' : 'Sign up'}
+            </div>
+            <div>
+              <h2 className="text-3xl font-semibold tracking-tight text-main">{title}</h2>
+              <p className="mt-2 text-sm leading-6 text-muted">{subtitle}</p>
             </div>
           </div>
 
-          <div className="space-y-6">
-            {view === 'signin'
-              ? (
-                  signinStep === 'details'
-                    ? (
-                        <form className="flex flex-col gap-4" onSubmit={sendSigninCode}>
-                          <div>
-                            <label className="label text-water-600">Email address</label>
-                            <input className="input" type="email" required value={signinEmail} onChange={(e) => setSigninEmail(e.target.value)} placeholder="you@example.com" />
-                          </div>
-                          {error && <div className="text-sm text-red-600">{error}</div>}
-                          <button className="btn-primary w-full" type="submit" disabled={loading}>
-                            {loading ? 'Sending…' : 'Send login code'}
-                          </button>
-                          <button type="button" className="text-sm font-medium text-water-600 mx-auto" onClick={() => switchView('signup')}>
-                            Need an account? Sign up
-                          </button>
-                        </form>
-                      )
-                    : (
-                        <form className="flex flex-col gap-4" onSubmit={verifySigninCode}>
-                          <div>
-                            <label className="label text-water-600">Verification code</label>
-                            <input className="input" required value={signinCode} onChange={(e) => setSigninCode(e.target.value)} placeholder="123456" />
-                          </div>
-                          {error && <div className="text-sm text-red-600">{error}</div>}
-                          <button className="btn-primary w-full" type="submit" disabled={loading}>
-                            {loading ? 'Verifying…' : 'Verify & continue'}
-                          </button>
-                          <button type="button" className="text-sm font-medium text-water-600 mx-auto" onClick={() => setSigninStep('details')}>
-                            Use a different email
-                          </button>
-                        </form>
-                      )
-                )
-              : (
-                  signupStep === 'details'
-                    ? (
-                        <form className="flex flex-col gap-4" onSubmit={sendSignupCode}>
-                          <div className="grid gap-3">
-                            <div>
-                              <label className="label text-water-600">Email address</label>
-                              <input className="input" type="email" required value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} placeholder="you@example.com" />
-                            </div>
-                            <div>
-                              <label className="label text-water-600">Name</label>
-                              <input className="input" required value={signupName} onChange={(e) => setSignupName(e.target.value)} placeholder="Alex" />
-                            </div>
-                            <div>
-                              <label className="label text-water-600">Age</label>
-                              <input className="input" type="number" min={1} required value={signupAge} onChange={(e) => setSignupAge(e.target.value ? Number(e.target.value) : '')} placeholder="25" />
-                            </div>
-                          </div>
-                          {error && <div className="text-sm text-red-600">{error}</div>}
-                          <button className="btn-primary w-full" type="submit" disabled={loading}>
-                            {loading ? 'Sending…' : 'Send verification code'}
-                          </button>
-                          <button type="button" className="text-sm font-medium text-slate-500 mx-auto" onClick={() => switchView('signin')}>
-                            Already have an account? Sign in
-                          </button>
-                        </form>
-                      )
-                    : (
-                        <form className="flex flex-col gap-4" onSubmit={verifySignupCode}>
-                          <div>
-                            <label className="label text-water-600">Verification code</label>
-                            <input className="input" required value={signupCode} onChange={(e) => setSignupCode(e.target.value)} placeholder="123456" />
-                          </div>
-                          {error && <div className="text-sm text-red-600">{error}</div>}
-                          <button className="btn-primary w-full" type="submit" disabled={loading}>
-                            {loading ? 'Verifying…' : 'Create account'}
-                          </button>
-                          <button type="button" className="text-sm font-medium text-water-600 mx-auto" onClick={() => setSignupStep('details')}>
-                            Use a different email
-                          </button>
-                          <button type="button" className="text-sm font-medium text-slate-500 mx-auto" onClick={() => switchView('signin')}>
-                            Already have an account? Sign in
-                          </button>
-                        </form>
-                      )
-                )}
+          <div className="mt-8 space-y-6">
+            {view === 'signin' ? (
+              signinStep === 'details' ? (
+                <form className="space-y-4" onSubmit={sendSigninCode}>
+                  <div>
+                    <label className="label">Email address</label>
+                    <input className="input mt-2" type="email" required value={signinEmail} onChange={(e) => setSigninEmail(e.target.value)} placeholder="you@example.com" />
+                  </div>
+                  {error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+                  <button className="btn-primary w-full justify-center" type="submit" disabled={loading}>
+                    {loading ? 'Sending...' : 'Send login code'}
+                  </button>
+                  <button type="button" className="btn-link mx-auto block" onClick={() => switchView('signup')}>
+                    Need an account? Sign up
+                  </button>
+                </form>
+              ) : (
+                <form className="space-y-4" onSubmit={verifySigninCode}>
+                  <div>
+                    <label className="label">Verification code</label>
+                    <input className="input mt-2" required value={signinCode} onChange={(e) => setSigninCode(e.target.value)} placeholder="123456" />
+                  </div>
+                  {error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+                  <button className="btn-primary w-full justify-center" type="submit" disabled={loading}>
+                    {loading ? 'Verifying...' : 'Verify and continue'}
+                  </button>
+                  <button type="button" className="btn-link mx-auto block" onClick={() => setSigninStep('details')}>
+                    Use a different email
+                  </button>
+                </form>
+              )
+            ) : signupStep === 'details' ? (
+              <form className="space-y-4" onSubmit={sendSignupCode}>
+                <div className="grid gap-4">
+                  <div>
+                    <label className="label">Email address</label>
+                    <input className="input mt-2" type="email" required value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} placeholder="you@example.com" />
+                  </div>
+                  <div>
+                    <label className="label">Name</label>
+                    <input className="input mt-2" required value={signupName} onChange={(e) => setSignupName(e.target.value)} placeholder="Alex" />
+                  </div>
+                  <div>
+                    <label className="label">Age</label>
+                    <input className="input mt-2" type="number" min={1} required value={signupAge} onChange={(e) => setSignupAge(e.target.value ? Number(e.target.value) : '')} placeholder="25" />
+                  </div>
+                </div>
+                {error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+                <button className="btn-primary w-full justify-center" type="submit" disabled={loading}>
+                  {loading ? 'Sending...' : 'Send verification code'}
+                </button>
+                <button type="button" className="btn-link mx-auto block" onClick={() => switchView('signin')}>
+                  Already have an account? Sign in
+                </button>
+              </form>
+            ) : (
+              <form className="space-y-4" onSubmit={verifySignupCode}>
+                <div>
+                  <label className="label">Verification code</label>
+                  <input className="input mt-2" required value={signupCode} onChange={(e) => setSignupCode(e.target.value)} placeholder="123456" />
+                </div>
+                {error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+                <button className="btn-primary w-full justify-center" type="submit" disabled={loading}>
+                  {loading ? 'Verifying...' : 'Create account'}
+                </button>
+                <button type="button" className="btn-link mx-auto block" onClick={() => setSignupStep('details')}>
+                  Use a different email
+                </button>
+                <button type="button" className="btn-link mx-auto block" onClick={() => switchView('signin')}>
+                  Already have an account? Sign in
+                </button>
+              </form>
+            )}
           </div>
-        </div>
+        </section>
       </div>
+    </div>
+  )
+}
+
+function Feature({ title, copy }: { title: string; copy: string }) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 px-4 py-4">
+      <p className="text-sm font-semibold text-white">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-white/65">{copy}</p>
     </div>
   )
 }

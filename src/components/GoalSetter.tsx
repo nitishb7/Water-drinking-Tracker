@@ -10,11 +10,11 @@ export default function GoalSetter({ goal, onChange }: Props) {
   React.useEffect(() => setValue(goal), [goal])
 
   return (
-    <div className="flex items-end gap-2">
-      <div className="grow">
+    <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+      <div>
         <label className="label">Daily goal (ml)</label>
         <input
-          className="input"
+          className="input mt-2"
           type="number"
           min={250}
           step={50}
@@ -22,7 +22,7 @@ export default function GoalSetter({ goal, onChange }: Props) {
           onChange={(e) => setValue(Number(e.target.value))}
         />
       </div>
-      <button className="btn-secondary" onClick={() => onChange(value)}>Set</button>
+      <button className="btn-secondary sm:min-w-[110px]" onClick={() => onChange(value)}>Update goal</button>
     </div>
   )
 }

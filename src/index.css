@@ -6,6 +6,18 @@
   html, body, #root {
     height: 100%;
   }
+
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(186, 230, 253, 0.45), transparent 30%),
+      linear-gradient(180deg, #f8fbff 0%, #f3f6fb 100%);
+  }
+
+  .dark body {
+    background:
+      radial-gradient(circle at top left, rgba(14, 116, 144, 0.18), transparent 28%),
+      linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  }
 }
 
 /* ==== Full-rectangle liquid progress =============================== */
@@ -71,13 +83,21 @@
 }
 
 @layer components {
-  .card {@apply bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm dark:bg-slate-900 dark:border-slate-800; }
-  .btn {@apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed; }
-  .btn-primary {@apply btn bg-gradient-to-r from-water-600 to-water-500 text-white shadow-sm hover:shadow md:hover:scale-[1.01]; }
-  .btn-secondary {@apply btn border border-slate-300 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:hover:bg-slate-800; }
+  .panel {@apply rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100; }
+  .panel-dark {@apply border-slate-900 bg-slate-950 shadow-[0_24px_60px_rgba(15,23,42,0.26)]; }
+  .panel-accent {@apply border-water-100 bg-gradient-to-br from-water-50 to-white dark:border-water-900/40 dark:from-slate-900 dark:to-slate-800; }
+  .card {@apply rounded-3xl border border-slate-200/80 bg-slate-50 p-5 shadow-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100; }
+  .btn {@apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary {@apply btn bg-slate-950 text-white shadow-sm hover:bg-slate-800 dark:bg-water-500 dark:text-slate-950 dark:hover:bg-water-400; }
+  .btn-secondary {@apply btn border border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800; }
   .btn-link {@apply text-sm text-slate-600 underline underline-offset-4 hover:text-slate-900 dark:text-slate-300; }
-  .input {@apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-water-400 dark:bg-slate-800 dark:border-slate-700; }
-  .label {
-    @apply text-sm text-slate-600 dark:text-slate-300;
-  }
+  .input {@apply w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-water-400 focus:ring-2 focus:ring-water-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100; }
+  .label {@apply text-sm font-medium text-slate-600 dark:text-slate-300; }
+  .eyebrow {@apply text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400; }
+  .nav-pill {@apply rounded-full border border-transparent px-4 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white; }
+  .nav-pill-active {@apply border-water-200 bg-water-50 text-water-700 shadow-sm dark:bg-water-500/15 dark:text-water-200; }
+  .surface-soft {@apply rounded-3xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/80; }
+  .text-main {@apply text-slate-950 dark:text-slate-100; }
+  .text-muted {@apply text-slate-600 dark:text-slate-300; }
+  .text-soft {@apply text-slate-500 dark:text-slate-400; }
 }

@@ -1,4 +1,9 @@
-export const toDateKey = (d = new Date()) => d.toISOString().slice(0, 10)
+export const toDateKey = (d = new Date()) => {
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 export const formatTime = (ms: number) => {
   const d = new Date(ms)

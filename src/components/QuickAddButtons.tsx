@@ -10,16 +10,16 @@ export default function QuickAddButtons({ onAdd }: Props) {
   const [custom, setCustom] = React.useState<string>('')
 
   return (
-    <div className="card">
-      <div className="mb-2 font-medium">Quick Add</div>
+    <div className="space-y-3">
+      <div className="text-sm font-medium text-muted">Quick add</div>
       <div className="flex flex-wrap gap-2">
         {presets.map((ml) => (
           <button key={ml} className="btn-secondary" onClick={() => onAdd(ml)}>
-            +{ml}ml
+            +{ml} ml
           </button>
         ))}
         <form
-          className="flex items-center gap-2"
+          className="flex flex-wrap items-center gap-2"
           onSubmit={(e) => {
             e.preventDefault()
             const parsed = Number.parseFloat(custom)
@@ -34,7 +34,7 @@ export default function QuickAddButtons({ onAdd }: Props) {
             min="0.01"
             step="any"
             inputMode="decimal"
-            placeholder="Custom"
+            placeholder="Custom ml"
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
           />
