@@ -5,6 +5,7 @@ export type Intake = {
 }
 
 export type ReminderInterval = 0 | 30 | 60 | 120
+export type VolumeUnit = 'ml' | 'l' | 'fl oz'
 
 export type UserProfile = {
   name: string
@@ -30,5 +31,6 @@ export type PersistedStateV1 = {
   remindersEnabled: boolean
   reminderInterval: ReminderInterval
   darkMode: boolean
+  volumeUnit?: VolumeUnit
   profile: UserProfile
 }

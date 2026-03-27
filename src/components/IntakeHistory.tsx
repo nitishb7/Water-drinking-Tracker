@@ -1,15 +1,17 @@
 import React from 'react'
 import { formatTime } from '../utils/date'
-import type { Intake } from '../types'
+import type { Intake, VolumeUnit } from '../types'
+import { formatVolume } from '../utils/units'
 
 type Props = {
   intakes: Intake[]
+  unit: VolumeUnit
   onRemove?: (id: string) => void
   title?: string
   showRemove?: boolean
 }
 
-export default function IntakeHistory({ intakes, onRemove, title = "Today's log", showRemove = true }: Props) {
+export default function IntakeHistory({ intakes, unit, onRemove, title = "Today's log", showRemove = true }: Props) {
   return (
     <div className="space-y-3">
       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-soft">{title}</p>
@@ -29,7 +31,7 @@ export default function IntakeHistory({ intakes, onRemove, title = "Today's log"
                   <span className="h-3 w-3 rounded-full bg-water-500" />
                 </div>
                 <div>
-                  <div className="text-base font-semibold text-main">{entry.amount} ml</div>
+                  <div className="text-base font-semibold text-main">{formatVolume(entry.amount, unit)}</div>
                   <div className="text-xs text-soft">Logged at {formatTime(entry.timestamp)}</div>
                 </div>
               </div>

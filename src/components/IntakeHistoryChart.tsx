@@ -8,11 +8,13 @@ import {
   YAxis,
   Tooltip,
 } from 'recharts'
-import type { Intake } from '../types'
+import type { Intake, VolumeUnit } from '../types'
 import { formatTime } from '../utils/date'
+import { formatVolume, getUnitLabel } from '../utils/units'
 
 type Props = {
   intakes: Intake[]
+  unit: VolumeUnit
 }
 
 const buildChartData = (intakes: Intake[]) => {
@@ -28,7 +30,7 @@ const buildChartData = (intakes: Intake[]) => {
   })
 }
 
-export default function IntakeHistoryChart({ intakes }: Props) {
+export default function IntakeHistoryChart({ intakes, unit }: Props) {
   const data = React.useMemo(() => buildChartData(intakes), [intakes])
   const isDark =
     typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
@@ -58,12 +60,12 @@ export default function IntakeHistoryChart({ intakes }: Props) {
           <YAxis
             tick={{ fill: tickFill, fontSize: 12 }}
             width={60}
-            tickFormatter={(value) => `${value}`}
-            label={{ value: 'ml', angle: -90, position: 'insideLeft', offset: 10, fill: tickFill }}
+            tickFormatter={(value) => formatVolume(Number(value), unit, { compact: true })}
+            label={{ value: getUnitLabel(unit), angle: -90, position: 'insideLeft', offset: 10, fill: tickFill }}
           />
           <Tooltip
             contentStyle={tooltipStyle}
-            formatter={(value: number, name) => [`${value} ml`, name === 'total' ? 'Total' : 'Amount']}
+            formatter={(value: number, name) => [formatVolume(value, unit), name === 'total' ? 'Total' : 'Amount']}
             labelFormatter={(label) => `Time ${label}`}
           />
           <Line

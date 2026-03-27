@@ -1,12 +1,15 @@
 import React from 'react'
+import type { VolumeUnit } from '../types'
+import { convertToMl, formatVolume, getInputMin, getInputStep, getUnitLabel } from '../utils/units'
 
 type Props = {
-  onAdd: (amount: number) => void
+  unit: VolumeUnit
+  onAdd: (amountMl: number) => void
 }
 
 const presets = [250, 500, 750]
 
-export default function QuickAddButtons({ onAdd }: Props) {
+export default function QuickAddButtons({ unit, onAdd }: Props) {
   const [custom, setCustom] = React.useState<string>('')
 
   return (
@@ -15,7 +18,7 @@ export default function QuickAddButtons({ onAdd }: Props) {
       <div className="flex flex-wrap gap-2">
         {presets.map((ml) => (
           <button key={ml} className="btn-secondary" onClick={() => onAdd(ml)}>
-            +{ml} ml
+            +{formatVolume(ml, unit, { compact: true })}
           </button>
         ))}
         <form
@@ -24,17 +27,17 @@ export default function QuickAddButtons({ onAdd }: Props) {
             e.preventDefault()
             const parsed = Number.parseFloat(custom)
             if (!Number.isFinite(parsed) || parsed <= 0) return
-            onAdd(parsed)
+            onAdd(convertToMl(parsed, unit))
             setCustom('')
           }}
         >
           <input
-            className="input w-28"
+            className="input w-32"
             type="number"
-            min="0.01"
-            step="any"
+            min={getInputMin(unit)}
+            step={getInputStep(unit)}
             inputMode="decimal"
-            placeholder="Custom ml"
+            placeholder={`Custom ${getUnitLabel(unit)}`}
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
           />

@@ -12,9 +12,10 @@ import { useLocalStorage } from './hooks/useLocalStorage'
 import { useDailyReset } from './hooks/useDailyReset'
 import { STORAGE_KEY } from './config'
 import { toDateKey, formatTime } from './utils/date'
-import type { PersistedStateV1, ReminderInterval } from './types'
+import type { PersistedStateV1, ReminderInterval, VolumeUnit } from './types'
 import { db } from './lib/db'
 import { PENDING_PROFILE_KEY } from './constants'
+import { VOLUME_UNITS, formatVolume, getUnitLabel } from './utils/units'
 
 const MOTIVATORS = [
   'Build hydration around small, repeatable habits.',
@@ -64,6 +65,7 @@ function HydraApp({ user }: { user: User }) {
     remindersEnabled: false,
     reminderInterval: 60,
     darkMode: false,
+    volumeUnit: 'ml',
     profile: buildProfile(email, (user as any)?.name, (user as any)?.age),
   }
 
@@ -93,6 +95,7 @@ function HydraApp({ user }: { user: User }) {
   }, [])
 
   const { dateKey, goalMl, intakes: storedIntakes, remindersEnabled, reminderInterval, darkMode, profile, goalHistory: storedGoalHistory, dailyTotals: storedDailyTotals } = state
+  const volumeUnit = state.volumeUnit ?? 'ml'
   const intakes = Array.isArray(storedIntakes) ? storedIntakes : []
   const goalHistory = Array.isArray(storedGoalHistory) ? storedGoalHistory : []
   const dailyTotals = Array.isArray(storedDailyTotals) ? storedDailyTotals : []
@@ -104,10 +107,18 @@ function HydraApp({ user }: { user: User }) {
   const surplusMl = Math.max(total - goalMl, 0)
   const lastLoggedTime = intakes[0] ? formatTime(intakes[0].timestamp) : '--:--'
   const motivator = React.useMemo(() => MOTIVATORS[Math.floor(Math.random() * MOTIVATORS.length)], [])
+  const formatDisplay = React.useCallback(
+    (valueMl: number, compact = false) => formatVolume(valueMl, volumeUnit, { compact }),
+    [volumeUnit],
+  )
 
   React.useEffect(() => {
     if (!state.goalHistory) setState((current) => ({ ...current, goalHistory: upsertGoalHistory([], current.dateKey, current.goalMl) }))
   }, [state.goalHistory, setState, upsertGoalHistory])
+
+  React.useEffect(() => {
+    if (!state.volumeUnit) setState((current) => ({ ...current, volumeUnit: 'ml' }))
+  }, [state.volumeUnit, setState])
 
   React.useEffect(() => {
     setState((current) => {
@@ -175,6 +186,7 @@ function HydraApp({ user }: { user: User }) {
   }, [setState, syncDailyTotals])
 
   const onReminderChange = (enabled: boolean, interval: ReminderInterval) => setState((current) => ({ ...current, remindersEnabled: enabled, reminderInterval: interval }))
+  const onUnitChange = (unit: VolumeUnit) => setState((current) => ({ ...current, volumeUnit: unit }))
   const onGoalChange = React.useCallback((goal: number) => {
     const normalized = Math.max(250, Math.round(goal))
     const currentDate = toDateKey()
@@ -262,6 +274,17 @@ function HydraApp({ user }: { user: User }) {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
+                    {VOLUME_UNITS.map((unit) => (
+                      <button
+                        key={unit}
+                        className={volumeUnit === unit ? 'nav-pill nav-pill-active px-3 py-1.5' : 'nav-pill px-3 py-1.5'}
+                        onClick={() => onUnitChange(unit)}
+                      >
+                        {getUnitLabel(unit)}
+                      </button>
+                    ))}
+                  </div>
                   <button className="btn-secondary" onClick={toggleDark}>{darkMode ? 'Light mode' : 'Dark mode'}</button>
                   <button className="btn-secondary" onClick={logout}>Log out</button>
                 </div>
@@ -278,13 +301,13 @@ function HydraApp({ user }: { user: User }) {
                 <p className="mt-4 text-xl font-semibold text-main">{profile.name}</p>
                 <p className="mt-1 text-sm text-soft">{profile.email || email}</p>
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-2xl bg-white px-4 py-3 dark:bg-slate-900"><p className="text-soft">Goal</p><p className="mt-1 font-semibold text-main">{goalMl} ml</p></div>
+                  <div className="rounded-2xl bg-white px-4 py-3 dark:bg-slate-900"><p className="text-soft">Goal</p><p className="mt-1 font-semibold text-main">{formatDisplay(goalMl)}</p></div>
                   <div className="rounded-2xl bg-white px-4 py-3 dark:bg-slate-900"><p className="text-soft">Reminders</p><p className="mt-1 font-semibold text-main">{remindersEnabled ? 'On' : 'Off'}</p></div>
                 </div>
               </div>
               <div className="rounded-3xl border border-water-100 bg-gradient-to-br from-water-50 to-white p-5 dark:border-water-900/40 dark:from-slate-900 dark:to-slate-800">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-water-700 dark:text-water-200">Today</p>
-                <p className="mt-3 text-3xl font-semibold text-main">{total} ml</p>
+                <p className="mt-3 text-3xl font-semibold text-main">{formatDisplay(total)}</p>
                 <p className="mt-2 text-sm leading-6 text-muted">{remindersEnabled ? `Reminders every ${reminderInterval} minutes.` : 'Reminders are currently off.'} {motivator}</p>
               </div>
             </div>
@@ -292,9 +315,9 @@ function HydraApp({ user }: { user: User }) {
         </header>
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard label="Current intake" value={`${total.toLocaleString()} ml`} caption={remainingMl > 0 ? `${remainingMl.toLocaleString()} ml remaining today` : `${surplusMl.toLocaleString()} ml above goal`} />
-          <StatCard label="Goal progress" value={`${percentOfGoal.toFixed(0)}%`} caption={`Target ${goalMl.toLocaleString()} ml`} />
-          <StatCard label="Entries today" value={`${intakes.length}`} caption={intakes.length > 0 ? `Average ${dailyAverage.toLocaleString()} ml per log` : 'No entries recorded yet'} />
+          <StatCard label="Current intake" value={formatDisplay(total)} caption={remainingMl > 0 ? `${formatDisplay(remainingMl)} remaining today` : `${formatDisplay(surplusMl)} above goal`} />
+          <StatCard label="Goal progress" value={`${percentOfGoal.toFixed(0)}%`} caption={`Target ${formatDisplay(goalMl)}`} />
+          <StatCard label="Entries today" value={`${intakes.length}`} caption={intakes.length > 0 ? `Average ${formatDisplay(dailyAverage)} per log` : 'No entries recorded yet'} />
           <StatCard label="Last update" value={lastLoggedTime} caption={remindersEnabled ? `Reminder interval ${reminderInterval} min` : 'Manual tracking only'} />
         </section>
 
@@ -316,7 +339,7 @@ function HydraApp({ user }: { user: User }) {
                   <div className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/80">{percentOfGoal.toFixed(0)}% of goal</div>
                 </div>
                 <div className="min-h-[360px] flex-1">
-                  <WaterFillCard valueMl={total} goalMl={goalMl} className="h-full w-full" />
+                  <WaterFillCard valueMl={total} goalMl={goalMl} unit={volumeUnit} className="h-full w-full" />
                 </div>
               </div>
               <div className="space-y-6">
@@ -329,17 +352,17 @@ function HydraApp({ user }: { user: User }) {
                     <button className="btn-secondary" onClick={resetTodayIntakes}>Reset today</button>
                   </div>
                   <div className="mt-6 space-y-5">
-                    <GoalSetter goal={goalMl} onChange={onGoalChange} />
-                    <QuickAddButtons onAdd={addIntake} />
+                    <GoalSetter goalMl={goalMl} unit={volumeUnit} onChange={onGoalChange} />
+                    <QuickAddButtons unit={volumeUnit} onAdd={addIntake} />
                   </div>
                 </section>
                 <section className="panel">
                   <p className="eyebrow">Daily Summary</p>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <MiniStat label="Remaining" value={`${remainingMl.toLocaleString()} ml`} />
+                    <MiniStat label="Remaining" value={formatDisplay(remainingMl)} />
                     <MiniStat label="Streak" value={`${streakDays} day${streakDays === 1 ? '' : 's'}`} />
                     <MiniStat label="Reminder" value={remindersEnabled ? `${reminderInterval} min` : 'Off'} />
-                    <MiniStat label="Average log" value={`${dailyAverage || 0} ml`} />
+                    <MiniStat label="Average log" value={formatDisplay(dailyAverage || 0)} />
                   </div>
                 </section>
               </div>
@@ -349,8 +372,8 @@ function HydraApp({ user }: { user: User }) {
                 <p className="eyebrow">Timeline</p>
                 <h3 className="mt-2 text-xl font-semibold text-main">Today&apos;s intake history</h3>
                 <div className="mt-6 space-y-6">
-                  <IntakeHistoryChart intakes={intakes} />
-                  <IntakeHistory intakes={intakes} onRemove={removeIntake} />
+                  <IntakeHistoryChart intakes={intakes} unit={volumeUnit} />
+                  <IntakeHistory intakes={intakes} unit={volumeUnit} onRemove={removeIntake} />
                 </div>
               </div>
               <div className="space-y-6">
@@ -376,27 +399,27 @@ function HydraApp({ user }: { user: User }) {
         {section === 'Analytics' && (
           <div className="space-y-6">
             <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <StatCard label="This week" value={`${weeklyTotal.toLocaleString()} ml`} caption={`Average ${weeklyAverage.toLocaleString()} ml per day`} />
-              <StatCard label="This month" value={`${currentMonthTotal.toLocaleString()} ml`} caption="Rolling six-month view" />
+              <StatCard label="This week" value={formatDisplay(weeklyTotal)} caption={`Average ${formatDisplay(weeklyAverage)} per day`} />
+              <StatCard label="This month" value={formatDisplay(currentMonthTotal)} caption="Rolling six-month view" />
               <StatCard label="Active hours" value={`${activeHours}`} caption="Hours with at least one intake today" />
               <StatCard label="Consistency" value={`${consistencyDays}/7`} caption="Days at 80% of goal or better" />
             </section>
             <section className="panel">
-              <RhythmBoard monthlyData={monthlyData} dailyData={dailyData} hourlyData={hourlyData} darkMode={darkMode} />
+              <RhythmBoard monthlyData={monthlyData} dailyData={dailyData} hourlyData={hourlyData} unit={volumeUnit} darkMode={darkMode} />
             </section>
             <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
               <div className="panel">
                 <p className="eyebrow">Daily Trend</p>
                 <h3 className="mt-2 text-xl font-semibold text-main">Cumulative intake across the day</h3>
                 <div className="mt-6">
-                  <IntakeHistoryChart intakes={intakes} />
+                  <IntakeHistoryChart intakes={intakes} unit={volumeUnit} />
                 </div>
               </div>
               <div className="panel">
                 <p className="eyebrow">Observed Signals</p>
                 <div className="mt-5 space-y-4">
-                  <InsightCard title="Goal coverage" body={remainingMl > 0 ? `You are ${remainingMl.toLocaleString()} ml away from your target today.` : `You are ${surplusMl.toLocaleString()} ml above your target today.`} />
-                  <InsightCard title="Logging rhythm" body={intakes.length > 0 ? `Your average entry is ${dailyAverage.toLocaleString()} ml across ${intakes.length} logs today.` : 'No intake pattern is available yet because nothing has been logged today.'} />
+                  <InsightCard title="Goal coverage" body={remainingMl > 0 ? `You are ${formatDisplay(remainingMl)} away from your target today.` : `You are ${formatDisplay(surplusMl)} above your target today.`} />
+                  <InsightCard title="Logging rhythm" body={intakes.length > 0 ? `Your average entry is ${formatDisplay(dailyAverage)} across ${intakes.length} logs today.` : 'No intake pattern is available yet because nothing has been logged today.'} />
                   <InsightCard title="Reminder support" body={remindersEnabled ? `Reminders are active every ${reminderInterval} minutes to support a steadier cadence.` : 'Reminders are off, so hydration is currently tracked manually.'} />
                 </div>
               </div>
@@ -408,13 +431,13 @@ function HydraApp({ user }: { user: User }) {
             <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
               <div className="panel panel-accent">
                 <p className="eyebrow text-water-800 dark:text-water-200">Current Goal</p>
-                <p className="mt-4 text-5xl font-semibold tracking-tight text-main">{todayGoalEntry.goal} ml</p>
+                <p className="mt-4 text-5xl font-semibold tracking-tight text-main">{formatDisplay(todayGoalEntry.goal)}</p>
                 <p className="mt-3 text-sm text-muted">Active on {formatGoalDate(todayGoalEntry.dateKey)}</p>
                 <div className="mt-6 space-y-5">
-                  <GoalSetter goal={goalMl} onChange={onGoalChange} />
+                  <GoalSetter goalMl={goalMl} unit={volumeUnit} onChange={onGoalChange} />
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <MiniStat label="Consumed" value={`${total.toLocaleString()} ml`} />
-                    <MiniStat label="Remaining" value={`${remainingMl.toLocaleString()} ml`} />
+                    <MiniStat label="Consumed" value={formatDisplay(total)} />
+                    <MiniStat label="Remaining" value={formatDisplay(remainingMl)} />
                   </div>
                 </div>
               </div>
@@ -431,9 +454,9 @@ function HydraApp({ user }: { user: User }) {
               <p className="eyebrow">Recent History</p>
               <h3 className="mt-2 text-xl font-semibold text-main">Previous goal entries</h3>
               <div className="mt-6 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-                <GoalHistoryCard entry={todayGoalEntry} highlighted formatGoalDate={formatGoalDate} />
+                <GoalHistoryCard entry={todayGoalEntry} highlighted formatGoalDate={formatGoalDate} formatValue={formatDisplay} />
                 {recentGoalEntries.length > 0 ? recentGoalEntries.map((entry) => (
-                  <GoalHistoryCard key={`${entry.dateKey}-${entry.timestamp}`} entry={entry} formatGoalDate={formatGoalDate} />
+                  <GoalHistoryCard key={`${entry.dateKey}-${entry.timestamp}`} entry={entry} formatGoalDate={formatGoalDate} formatValue={formatDisplay} />
                 )) : (
                   <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-sm text-soft dark:border-slate-700 dark:bg-slate-800/80">
                     Additional goal history will appear here as you update your target on future dates.
@@ -519,15 +542,17 @@ function GoalHistoryCard({
   entry,
   highlighted = false,
   formatGoalDate,
+  formatValue,
 }: {
   entry: { goal: number; dateKey: string; timestamp: number }
   highlighted?: boolean
   formatGoalDate: (dateKey: string) => string
+  formatValue: (valueMl: number, compact?: boolean) => string
 }) {
   return (
     <div className={`rounded-3xl border px-6 py-5 ${highlighted ? 'border-water-200 bg-gradient-to-br from-water-50 to-white text-water-900 dark:border-water-900/40 dark:from-slate-900 dark:to-slate-800 dark:text-water-100' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100'}`}>
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-soft">{highlighted ? 'Active goal' : 'Goal entry'}</p>
-      <div className="mt-4 text-3xl font-semibold tracking-tight">{entry.goal} ml</div>
+      <div className="mt-4 text-3xl font-semibold tracking-tight">{formatValue(entry.goal)}</div>
       <div className={`mt-2 text-sm ${highlighted ? 'text-water-800 dark:text-water-200' : 'text-soft'}`}>{formatGoalDate(entry.dateKey)}</div>
       <div className="mt-2 text-xs text-slate-400 dark:text-slate-500">
         Updated at {new Date(entry.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}

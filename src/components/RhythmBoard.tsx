@@ -11,12 +11,15 @@ import {
   Bar,
   LabelList,
 } from 'recharts'
+import type { VolumeUnit } from '../types'
+import { formatVolume, getUnitLabel } from '../utils/units'
 
 type Point = { label: string; value: number }
 type Props = {
   monthlyData: Point[]
   dailyData: Point[]
   hourlyData: Point[]
+  unit: VolumeUnit
   darkMode?: boolean
 }
 
@@ -26,7 +29,7 @@ const VIEWS = [
   { id: 'hourly', label: 'Hourly' },
 ] as const
 
-export default function RhythmBoard({ monthlyData, dailyData, hourlyData, darkMode = false }: Props) {
+export default function RhythmBoard({ monthlyData, dailyData, hourlyData, unit, darkMode = false }: Props) {
   const [view, setView] = React.useState<typeof VIEWS[number]['id']>('monthly')
   const data = view === 'monthly' ? monthlyData : view === 'daily' ? dailyData : hourlyData
   const gridStroke = darkMode ? '#334155' : '#e2e8f0'
@@ -43,7 +46,7 @@ export default function RhythmBoard({ monthlyData, dailyData, hourlyData, darkMo
     if (value == null || value <= 0) return null
     const labelX = x + width / 2
     const labelY = y - 8
-    const displayValue = Number.isFinite(value) ? value.toFixed(2).replace(/\.00$/, '') : value
+    const displayValue = Number.isFinite(value) ? formatVolume(Number(value), unit, { compact: true }) : value
     return (
       <text x={labelX} y={labelY} textAnchor="middle" fill={labelFill} fontSize={12} fontWeight={500}>
         {displayValue}
@@ -65,12 +68,13 @@ export default function RhythmBoard({ monthlyData, dailyData, hourlyData, darkMo
             <YAxis
               tick={{ fill: tickFill, fontSize: 12 }}
               width={64}
-              label={{ value: 'Water (ml)', angle: -90, position: 'insideLeft', offset: 5, dy: 45, fill: tickFill }}
+              tickFormatter={(value) => formatVolume(Number(value), unit, { compact: true })}
+              label={{ value: `Water (${getUnitLabel(unit)})`, angle: -90, position: 'insideLeft', offset: 5, dy: 45, fill: tickFill }}
             />
             <Tooltip
               cursor={{ fill: 'rgba(123, 136, 255, 0.08)' }}
               contentStyle={tooltipStyle}
-              formatter={(value: number) => [`${value} ml`, 'Total']}
+              formatter={(value: number) => [formatVolume(value, unit), 'Total']}
             />
             <Bar dataKey="value" fill="#1b87df" radius={[12, 12, 0, 0]} maxBarSize={56}>
               <LabelList dataKey="value" content={renderBarLabel} />
@@ -91,12 +95,13 @@ export default function RhythmBoard({ monthlyData, dailyData, hourlyData, darkMo
             <YAxis
               tick={{ fill: tickFill, fontSize: 12 }}
               width={70}
-               label={{ value: 'Water (ml)', angle: -90, position: 'insideLeft', offset: 5, dy: 45, fill: tickFill }}
+               tickFormatter={(value) => formatVolume(Number(value), unit, { compact: true })}
+               label={{ value: `Water (${getUnitLabel(unit)})`, angle: -90, position: 'insideLeft', offset: 5, dy: 45, fill: tickFill }}
             />
             <Tooltip
               cursor={{ fill: 'rgba(123, 136, 255, 0.08)' }}
               contentStyle={tooltipStyle}
-              formatter={(value: number) => [`${value} ml`, 'Total']}
+              formatter={(value: number) => [formatVolume(value, unit), 'Total']}
             />
             <Bar dataKey="value" fill="#1b87df" radius={[12, 12, 0, 0]} maxBarSize={56}>
               <LabelList dataKey="value" content={renderBarLabel} />
@@ -117,12 +122,13 @@ export default function RhythmBoard({ monthlyData, dailyData, hourlyData, darkMo
             <YAxis
               tick={{ fill: tickFill, fontSize: 12 }}
               width={56}
-               label={{ value: 'Water (ml)', angle: -90, position: 'insideLeft', offset: 5, dy: 45, fill: tickFill }}
+               tickFormatter={(value) => formatVolume(Number(value), unit, { compact: true })}
+               label={{ value: `Water (${getUnitLabel(unit)})`, angle: -90, position: 'insideLeft', offset: 5, dy: 45, fill: tickFill }}
             />
             <Tooltip
               cursor={{ fill: 'rgba(27,135,223,0.08)' }}
               contentStyle={tooltipStyle}
-              formatter={(value: number) => [`${value} ml`, 'Total']}
+              formatter={(value: number) => [formatVolume(value, unit), 'Total']}
               labelFormatter={(label) => `${label}:00`}
             />
             <Bar dataKey="value" fill="#1b87df" radius={[10, 10, 0, 0]} maxBarSize={32}>
