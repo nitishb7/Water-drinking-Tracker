@@ -54,14 +54,14 @@ export default function IntakeHistoryChart({ intakes, unit }: Props) {
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 16, right: 24, left: 4, bottom: 16 }}>
+        <LineChart data={data} margin={{ top: 16, right: 24, left: 20, bottom: 16 }}>
           <CartesianGrid stroke={gridStroke} strokeDasharray="4 4" />
           <XAxis dataKey="time" tick={{ fill: tickFill, fontSize: 12 }} angle={-35} textAnchor="end" height={50} />
           <YAxis
             tick={{ fill: tickFill, fontSize: 12 }}
-            width={60}
+            width={76}
             tickFormatter={(value) => formatVolume(Number(value), unit, { compact: true })}
-            label={{ value: getUnitLabel(unit), angle: -90, position: 'insideLeft', offset: 10, fill: tickFill }}
+            label={{ value: getUnitLabel(unit), angle: -90, position: 'insideLeft', offset: 0, dx: -8, fill: tickFill }}
           />
           <Tooltip
             contentStyle={tooltipStyle}

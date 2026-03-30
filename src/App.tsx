@@ -269,8 +269,8 @@ function HydraApp({ user }: { user: User }) {
                 <div className="space-y-3">
                   <div className="inline-flex rounded-full border border-water-200 bg-water-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-water-700 dark:border-water-800 dark:bg-water-500/10 dark:text-water-200">Hydra</div>
                   <div>
-                    <h1 className="text-3xl font-semibold tracking-tight text-main sm:text-4xl">Minimal hydration tracking, structured properly</h1>
-                    <p className="mt-3 max-w-2xl text-sm leading-6 text-muted sm:text-base">Track intake, review progress, and keep routines stable inside a clearer, more professional interface.</p>
+                    <h1 className="text-3xl font-semibold tracking-tight text-main sm:text-4xl">Track your hydration with clarity</h1>
+                    <p className="mt-3 max-w-2xl text-sm leading-6 text-muted sm:text-base">Log water, review progress, and keep a steady routine in one focused workspace.</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
