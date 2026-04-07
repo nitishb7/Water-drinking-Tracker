@@ -330,13 +330,13 @@ function HydraApp({ user }: { user: User }) {
         {section === 'Dashboard' && (
           <div className="space-y-6">
             <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-              <div className="panel panel-dark flex flex-col overflow-hidden">
+              <div className="panel flex flex-col overflow-hidden border-slate-300 bg-slate-300 text-slate-900 shadow-[0_24px_60px_rgba(148,163,184,0.28)] dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100">
                 <div className="mb-5 flex items-center justify-between gap-3">
                   <div>
-                    <p className="eyebrow text-white/65">Primary Metric</p>
-                    <h3 className="mt-2 text-2xl font-semibold text-white">Daily intake progress</h3>
+                    <p className="eyebrow text-slate-600 dark:text-white/65">Primary Metric</p>
+                    <h3 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">Daily intake progress</h3>
                   </div>
-                  <div className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/80">{percentOfGoal.toFixed(0)}% of goal</div>
+                  <div className="rounded-full border border-slate-400 bg-white/50 px-4 py-2 text-sm text-slate-700 dark:border-white/15 dark:bg-white/10 dark:text-white/80">{percentOfGoal.toFixed(0)}% of goal</div>
                 </div>
                 <div className="min-h-[360px] flex-1">
                   <WaterFillCard valueMl={total} goalMl={goalMl} unit={volumeUnit} className="h-full w-full" />
