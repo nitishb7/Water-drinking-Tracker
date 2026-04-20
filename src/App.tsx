@@ -256,6 +256,8 @@ function HydraApp({ user }: { user: User }) {
   const formatGoalDate = React.useCallback((dateKeyValue: string) => new Date(`${dateKeyValue}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }), [])
   const todayGoalEntry = goalsLast30.find((entry) => entry.dateKey === dateKey) ?? ({ dateKey, goal: goalMl, timestamp: Date.now() } as PersistedStateV1['goalHistory'][number])
   const recentGoalEntries = goalsLast30.filter((entry) => entry.dateKey !== todayGoalEntry.dateKey).slice(0, 6)
+  const streakDisplayCount = 7
+  const visibleStreakDays = Math.min(streakDays, streakDisplayCount)
 
   const [eyebrow, description] = SECTION_META[section]
 
@@ -294,6 +296,46 @@ function HydraApp({ user }: { user: User }) {
                   <button key={item} className={section === item ? 'nav-pill nav-pill-active' : 'nav-pill'} onClick={() => setSection(item)}>{item}</button>
                 ))}
               </nav>
+              <div className="surface-soft p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-soft">Streak</p>
+                    <div className="mt-3 flex items-end gap-3">
+                      <p className="text-4xl font-semibold tracking-tight text-main">{streakDays}</p>
+                      <p className="pb-1 text-sm text-muted">day{streakDays === 1 ? '' : 's'} in a row</p>
+                    </div>
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
+                      {streakDays > 0
+                        ? 'Keep logging water each day to extend the run.'
+                        : 'Log water today to start your first hydration streak.'}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right dark:border-slate-700 dark:bg-slate-900">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-soft">Last log</p>
+                    <p className="mt-2 text-lg font-semibold text-main">{lastLoggedTime}</p>
+                  </div>
+                </div>
+                <div className="mt-5 flex flex-wrap gap-2" aria-label={`${streakDays}-day hydration streak`}>
+                  {Array.from({ length: streakDisplayCount }).map((_, index) => {
+                    const active = index < visibleStreakDays
+                    return (
+                      <span
+                        key={`streak-${index}`}
+                        className={`text-2xl transition ${active ? 'opacity-100' : 'opacity-30 grayscale'}`}
+                        role="img"
+                        aria-hidden="true"
+                      >
+                        🥤
+                      </span>
+                    )
+                  })}
+                </div>
+                <p className="mt-3 text-xs leading-5 text-soft">
+                  {streakDays > streakDisplayCount
+                    ? `Showing the first ${streakDisplayCount} days of your current streak.`
+                    : 'Each glass marks one completed day in your current streak.'}
+                </p>
+              </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               <div className="surface-soft p-5">
