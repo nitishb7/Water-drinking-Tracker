@@ -372,7 +372,7 @@ function HydraApp({ user }: { user: User }) {
         {section === 'Dashboard' && (
           <div className="space-y-6">
             <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-              <div className="panel flex flex-col overflow-hidden border-slate-300 bg-slate-300 text-slate-900 shadow-[0_24px_60px_rgba(148,163,184,0.28)] dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100">
+              <div className="panel flex flex-col overflow-hidden border-white bg-white text-slate-900 shadow-[0_24px_60px_rgba(148,163,184,0.18)] dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100">
                 <div className="mb-5 flex items-center justify-between gap-3">
                   <div>
                     <p className="eyebrow text-slate-600 dark:text-white/65">Primary Metric</p>
