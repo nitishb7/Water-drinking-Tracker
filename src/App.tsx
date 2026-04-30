@@ -25,7 +25,7 @@ const MOTIVATORS = [
 ]
 
 const SECTION_META = {
-  Dashboard: ['Overview', 'A cleaner daily workspace for logging water and checking progress.'],
+  Dashboard: ['Overview', 'A focused workspace for logging water and checking today at a glance.'],
   Analytics: ['Insights', 'Review weekly, monthly, and hourly hydration patterns.'],
   Goals: ['Targets', 'Manage the current goal and keep a simple record of changes.'],
   Reminders: ['Routine', 'Control reminders, theme, and daily reset actions in one place.'],
@@ -262,282 +262,260 @@ function HydraApp({ user }: { user: User }) {
   const [eyebrow, description] = SECTION_META[section]
 
   return (
-    <div className="min-h-screen px-4 py-6 text-slate-900 dark:text-slate-100 lg:px-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <header className="panel overflow-hidden">
-          <div className="grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
-            <div className="space-y-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="space-y-3">
-                  <div className="inline-flex rounded-full border border-water-200 bg-water-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-water-700 dark:border-water-800 dark:bg-water-500/10 dark:text-water-200">Hydra</div>
-                  <div>
-                    <h1 className="text-3xl font-semibold tracking-tight text-main sm:text-4xl">Track your hydration with clarity</h1>
-                    <p className="mt-3 max-w-2xl text-sm leading-6 text-muted sm:text-base">Log water, review progress, and keep a steady routine in one focused workspace.</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
-                    {VOLUME_UNITS.map((unit) => (
-                      <button
-                        key={unit}
-                        className={volumeUnit === unit ? 'nav-pill nav-pill-active px-3 py-1.5' : 'nav-pill px-3 py-1.5'}
-                        onClick={() => onUnitChange(unit)}
-                      >
-                        {getUnitLabel(unit)}
-                      </button>
-                    ))}
-                  </div>
-                  <button className="btn-secondary" onClick={toggleDark}>{darkMode ? 'Light mode' : 'Dark mode'}</button>
-                  <button className="btn-secondary" onClick={logout}>Log out</button>
+    <div className="min-h-screen bg-app text-slate-900 dark:text-slate-100">
+      <div className="mx-auto grid min-h-screen max-w-[1440px] lg:grid-cols-[260px_1fr]">
+        <aside className="border-b border-slate-200 bg-white/95 px-4 py-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r lg:px-5 lg:py-6">
+          <div className="flex h-full flex-col gap-6">
+            <div className="flex items-center justify-between gap-3 lg:block">
+              <div className="flex items-center gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-lg bg-slate-950 text-sm font-semibold text-white dark:bg-white dark:text-slate-950">H</div>
+                <div>
+                  <p className="text-sm font-semibold text-main">Hydra</p>
+                  <p className="text-xs text-soft">Water tracker</p>
                 </div>
               </div>
-              <nav className="flex flex-wrap gap-2" aria-label="Primary">
-                {(Object.keys(SECTION_META) as SectionKey[]).map((item) => (
-                  <button key={item} className={section === item ? 'nav-pill nav-pill-active' : 'nav-pill'} onClick={() => setSection(item)}>{item}</button>
-                ))}
-              </nav>
-              <div className="surface-soft p-5">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-soft">Streak</p>
-                    <div className="mt-3 flex items-end gap-3">
-                      <p className="text-4xl font-semibold tracking-tight text-main">{streakDays}</p>
-                      <p className="pb-1 text-sm text-muted">day{streakDays === 1 ? '' : 's'} in a row</p>
-                    </div>
-                    <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-                      {streakDays > 0
-                        ? 'Keep logging water each day to extend the run.'
-                        : 'Log water today to start your first hydration streak.'}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right dark:border-slate-700 dark:bg-slate-900">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-soft">Last log</p>
-                    <p className="mt-2 text-lg font-semibold text-main">{lastLoggedTime}</p>
-                  </div>
-                </div>
-                <div className="mt-5 flex flex-wrap gap-2" aria-label={`${streakDays}-day hydration streak`}>
-                  {Array.from({ length: streakDisplayCount }).map((_, index) => {
-                    const active = index < visibleStreakDays
-                    return (
-                      <span
-                        key={`streak-${index}`}
-                        className={`text-2xl transition ${active ? 'opacity-100' : 'opacity-30 grayscale'}`}
-                        role="img"
-                        aria-hidden="true"
-                      >
-                        🥤
-                      </span>
-                    )
-                  })}
-                </div>
-                <p className="mt-3 text-xs leading-5 text-soft">
-                  {streakDays > streakDisplayCount
-                    ? `Showing the first ${streakDisplayCount} days of your current streak.`
-                    : 'Each glass marks one completed day in your current streak.'}
-                </p>
-              </div>
+              <button className="btn-secondary lg:hidden" onClick={logout}>Log out</button>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-              <div className="surface-soft p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-soft">Account</p>
-                <p className="mt-4 text-xl font-semibold text-main">{profile.name}</p>
-                <p className="mt-1 text-sm text-soft">{profile.email || email}</p>
-                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-2xl bg-white px-4 py-3 dark:bg-slate-900"><p className="text-soft">Goal</p><p className="mt-1 font-semibold text-main">{formatDisplay(goalMl)}</p></div>
-                  <div className="rounded-2xl bg-white px-4 py-3 dark:bg-slate-900"><p className="text-soft">Reminders</p><p className="mt-1 font-semibold text-main">{remindersEnabled ? 'On' : 'Off'}</p></div>
+
+            <nav className="grid grid-cols-2 gap-2 lg:grid-cols-1" aria-label="Primary">
+              {(Object.keys(SECTION_META) as SectionKey[]).map((item) => (
+                <button
+                  key={item}
+                  className={section === item ? 'nav-item nav-item-active' : 'nav-item'}
+                  onClick={() => setSection(item)}
+                >
+                  <span>{item}</span>
+                  <span className="text-xs text-soft">{SECTION_META[item][0]}</span>
+                </button>
+              ))}
+            </nav>
+
+            <div className="hidden flex-1 lg:block" />
+
+            <div className="grid gap-3 border-t border-slate-200 pt-4 dark:border-slate-800">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-main">{profile.name}</p>
+                  <p className="truncate text-xs text-soft">{profile.email || email}</p>
                 </div>
+                <span className={remindersEnabled ? 'status-dot status-dot-active' : 'status-dot'} aria-label={remindersEnabled ? 'Reminders enabled' : 'Reminders disabled'} />
               </div>
-              <div className="rounded-3xl border border-water-100 bg-gradient-to-br from-water-50 to-white p-5 dark:border-water-900/40 dark:from-slate-900 dark:to-slate-800">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-water-700 dark:text-water-200">Today</p>
-                <p className="mt-3 text-3xl font-semibold text-main">{formatDisplay(total)}</p>
-                <p className="mt-2 text-sm leading-6 text-muted">{remindersEnabled ? `Reminders every ${reminderInterval} minutes.` : 'Reminders are currently off.'} {motivator}</p>
+              <div className="segmented" aria-label="Volume unit">
+                {VOLUME_UNITS.map((unit) => (
+                  <button
+                    key={unit}
+                    className={volumeUnit === unit ? 'segmented-option segmented-option-active' : 'segmented-option'}
+                    onClick={() => onUnitChange(unit)}
+                  >
+                    {getUnitLabel(unit)}
+                  </button>
+                ))}
+              </div>
+              <div className="hidden grid-cols-2 gap-2 lg:grid">
+                <button className="btn-secondary justify-center" onClick={toggleDark}>{darkMode ? 'Light' : 'Dark'}</button>
+                <button className="btn-secondary justify-center" onClick={logout}>Log out</button>
               </div>
             </div>
           </div>
-        </header>
+        </aside>
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard label="Current intake" value={formatDisplay(total)} caption={remainingMl > 0 ? `${formatDisplay(remainingMl)} remaining today` : `${formatDisplay(surplusMl)} above goal`} />
-          <StatCard label="Goal progress" value={`${percentOfGoal.toFixed(0)}%`} caption={`Target ${formatDisplay(goalMl)}`} />
-          <StatCard label="Entries today" value={`${intakes.length}`} caption={intakes.length > 0 ? `Average ${formatDisplay(dailyAverage)} per log` : 'No entries recorded yet'} />
-          <StatCard label="Last update" value={lastLoggedTime} caption={remindersEnabled ? `Reminder interval ${reminderInterval} min` : 'Manual tracking only'} />
-        </section>
+        <main className="px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
+          <header className="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-slate-800 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <p className="eyebrow">{eyebrow}</p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-main">{section}</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">{description}</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-3 xl:min-w-[520px]">
+              <MiniStat label="Today" value={formatDisplay(total, true)} />
+              <MiniStat label="Goal" value={formatDisplay(goalMl, true)} />
+              <MiniStat label="Last log" value={lastLoggedTime} />
+            </div>
+          </header>
 
-        <section>
-          <p className="eyebrow">{eyebrow}</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-main sm:text-3xl">{section}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted sm:text-base">{description}</p>
-        </section>
+          <section className="mb-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <StatCard label="Current intake" value={formatDisplay(total)} caption={remainingMl > 0 ? `${formatDisplay(remainingMl)} remaining today` : `${formatDisplay(surplusMl)} above goal`} />
+            <StatCard label="Goal progress" value={`${percentOfGoal.toFixed(0)}%`} caption={`Target ${formatDisplay(goalMl)}`} />
+            <StatCard label="Entries today" value={`${intakes.length}`} caption={intakes.length > 0 ? `Average ${formatDisplay(dailyAverage)} per log` : 'No entries recorded yet'} />
+            <StatCard label="Streak" value={`${streakDays} day${streakDays === 1 ? '' : 's'}`} caption={remindersEnabled ? `Reminder interval ${reminderInterval} min` : 'Manual tracking only'} />
+          </section>
 
-        {section === 'Dashboard' && (
-          <div className="space-y-6">
-            <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-              <div className="panel flex flex-col overflow-hidden border-white bg-white text-slate-900 shadow-[0_24px_60px_rgba(148,163,184,0.18)] dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100">
-                <div className="mb-5 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="eyebrow text-slate-600 dark:text-white/65">Primary Metric</p>
-                    <h3 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">Daily intake progress</h3>
-                  </div>
-                  <div className="rounded-full border border-slate-400 bg-white/50 px-4 py-2 text-sm text-slate-700 dark:border-white/15 dark:bg-white/10 dark:text-white/80">{percentOfGoal.toFixed(0)}% of goal</div>
-                </div>
-                <div className="min-h-[360px] flex-1">
-                  <WaterFillCard valueMl={total} goalMl={goalMl} unit={volumeUnit} className="h-full w-full" />
-                </div>
-              </div>
-              <div className="space-y-6">
-                <section className="panel">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
+          {section === 'Dashboard' && (
+            <div className="space-y-5">
+              <section className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_420px]">
+                <div className="panel">
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <p className="eyebrow">Quick Actions</p>
-                      <h3 className="mt-2 text-xl font-semibold text-main">Log water and adjust your goal</h3>
+                      <p className="eyebrow">Primary metric</p>
+                      <h2 className="mt-2 text-xl font-semibold text-main">Daily intake progress</h2>
                     </div>
-                    <button className="btn-secondary" onClick={resetTodayIntakes}>Reset today</button>
+                    <div className="metric-badge">{percentOfGoal.toFixed(0)}% complete</div>
                   </div>
-                  <div className="mt-6 space-y-5">
-                    <GoalSetter goalMl={goalMl} unit={volumeUnit} onChange={onGoalChange} />
-                    <QuickAddButtons unit={volumeUnit} onAdd={addIntake} />
+                  <div className="min-h-[420px]">
+                    <WaterFillCard valueMl={total} goalMl={goalMl} unit={volumeUnit} className="h-full w-full" />
                   </div>
-                </section>
-                <section className="panel">
-                  <p className="eyebrow">Daily Summary</p>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <MiniStat label="Remaining" value={formatDisplay(remainingMl)} />
-                    <MiniStat label="Streak" value={`${streakDays} day${streakDays === 1 ? '' : 's'}`} />
-                    <MiniStat label="Reminder" value={remindersEnabled ? `${reminderInterval} min` : 'Off'} />
-                    <MiniStat label="Average log" value={formatDisplay(dailyAverage || 0)} />
-                  </div>
-                </section>
-              </div>
-            </section>
-            <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="panel">
-                <p className="eyebrow">Timeline</p>
-                <h3 className="mt-2 text-xl font-semibold text-main">Today&apos;s intake history</h3>
-                <div className="mt-6 space-y-6">
-                  <IntakeHistoryChart intakes={intakes} unit={volumeUnit} />
-                  <IntakeHistory intakes={intakes} unit={volumeUnit} onRemove={removeIntake} />
                 </div>
-              </div>
-              <div className="space-y-6">
-                <section className="panel">
-                  <p className="eyebrow">Focus</p>
-                  <h3 className="mt-2 text-xl font-semibold text-main">Keep the workflow simple</h3>
-                  <p className="mt-3 text-sm leading-6 text-muted">{motivator}</p>
-                  <div className="mt-6 rounded-3xl border border-water-100 bg-water-50/70 p-4 text-sm text-water-800 dark:border-water-900/40 dark:bg-water-500/10 dark:text-water-100">Logging close to the moment you drink usually improves consistency more than adding complexity.</div>
-                </section>
-                <section className="panel">
+
+                <div className="space-y-5">
+                  <section className="panel">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="eyebrow">Log intake</p>
+                        <h2 className="mt-2 text-xl font-semibold text-main">Quick actions</h2>
+                      </div>
+                      <button className="btn-secondary" onClick={resetTodayIntakes}>Reset</button>
+                    </div>
+                    <div className="mt-5 space-y-5">
+                      <QuickAddButtons unit={volumeUnit} onAdd={addIntake} />
+                      <GoalSetter goalMl={goalMl} unit={volumeUnit} onChange={onGoalChange} />
+                    </div>
+                  </section>
+
+                  <section className="panel">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="eyebrow">Routine</p>
+                        <p className="mt-2 text-2xl font-semibold text-main">{streakDays}</p>
+                        <p className="text-sm text-muted">day{streakDays === 1 ? '' : 's'} in a row</p>
+                      </div>
+                      <div className="text-right text-sm text-muted">{remindersEnabled ? `${reminderInterval} min reminders` : 'Reminders off'}</div>
+                    </div>
+                    <div className="mt-5 grid grid-cols-7 gap-1.5" aria-label={`${streakDays}-day hydration streak`}>
+                      {Array.from({ length: streakDisplayCount }).map((_, index) => {
+                        const active = index < visibleStreakDays
+                        return <span key={`streak-${index}`} className={active ? 'streak-cell streak-cell-active' : 'streak-cell'} />
+                      })}
+                    </div>
+                    <p className="mt-4 text-sm leading-6 text-muted">{motivator}</p>
+                  </section>
+                </div>
+              </section>
+
+              <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+                <div className="panel">
+                  <p className="eyebrow">Timeline</p>
+                  <h2 className="mt-2 text-xl font-semibold text-main">Today&apos;s intake history</h2>
+                  <div className="mt-5 space-y-5">
+                    <IntakeHistoryChart intakes={intakes} unit={volumeUnit} />
+                    <IntakeHistory intakes={intakes} unit={volumeUnit} onRemove={removeIntake} />
+                  </div>
+                </div>
+                <div className="panel">
                   <p className="eyebrow">Profile</p>
-                  <div className="mt-4 space-y-3 text-sm text-muted">
+                  <div className="mt-5 space-y-3 text-sm text-muted">
                     <InfoRow label="Name" value={profile.name} />
                     <InfoRow label="Email" value={profile.email || email || 'Not available'} />
                     <InfoRow label="Age" value={profile.age > 0 ? `${profile.age}` : 'Not provided'} />
                     <InfoRow label="Theme" value={darkMode ? 'Dark' : 'Light'} />
                   </div>
-                </section>
-              </div>
-            </section>
-          </div>
-        )}
-        {section === 'Analytics' && (
-          <div className="space-y-6">
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <StatCard label="This week" value={formatDisplay(weeklyTotal)} caption={`Average ${formatDisplay(weeklyAverage)} per day`} />
-              <StatCard label="This month" value={formatDisplay(currentMonthTotal)} caption="Rolling six-month view" />
-              <StatCard label="Active hours" value={`${activeHours}`} caption="Hours with at least one intake today" />
-              <StatCard label="Consistency" value={`${consistencyDays}/7`} caption="Days at 80% of goal or better" />
-            </section>
-            <section className="panel">
-              <RhythmBoard monthlyData={monthlyData} dailyData={dailyData} hourlyData={hourlyData} unit={volumeUnit} darkMode={darkMode} />
-            </section>
-            <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-              <div className="panel">
-                <p className="eyebrow">Daily Trend</p>
-                <h3 className="mt-2 text-xl font-semibold text-main">Cumulative intake across the day</h3>
-                <div className="mt-6">
-                  <IntakeHistoryChart intakes={intakes} unit={volumeUnit} />
                 </div>
-              </div>
-              <div className="panel">
-                <p className="eyebrow">Observed Signals</p>
-                <div className="mt-5 space-y-4">
-                  <InsightCard title="Goal coverage" body={remainingMl > 0 ? `You are ${formatDisplay(remainingMl)} away from your target today.` : `You are ${formatDisplay(surplusMl)} above your target today.`} />
-                  <InsightCard title="Logging rhythm" body={intakes.length > 0 ? `Your average entry is ${formatDisplay(dailyAverage)} across ${intakes.length} logs today.` : 'No intake pattern is available yet because nothing has been logged today.'} />
-                  <InsightCard title="Reminder support" body={remindersEnabled ? `Reminders are active every ${reminderInterval} minutes to support a steadier cadence.` : 'Reminders are off, so hydration is currently tracked manually.'} />
-                </div>
-              </div>
-            </section>
-          </div>
-        )}
-        {section === 'Goals' && (
-          <div className="space-y-6">
-            <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-              <div className="panel panel-accent">
-                <p className="eyebrow text-water-800 dark:text-water-200">Current Goal</p>
-                <p className="mt-4 text-5xl font-semibold tracking-tight text-main">{formatDisplay(todayGoalEntry.goal)}</p>
-                <p className="mt-3 text-sm text-muted">Active on {formatGoalDate(todayGoalEntry.dateKey)}</p>
-                <div className="mt-6 space-y-5">
-                  <GoalSetter goalMl={goalMl} unit={volumeUnit} onChange={onGoalChange} />
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <MiniStat label="Consumed" value={formatDisplay(total)} />
-                    <MiniStat label="Remaining" value={formatDisplay(remainingMl)} />
+              </section>
+            </div>
+          )}
+
+          {section === 'Analytics' && (
+            <div className="space-y-5">
+              <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <StatCard label="This week" value={formatDisplay(weeklyTotal)} caption={`Average ${formatDisplay(weeklyAverage)} per day`} />
+                <StatCard label="This month" value={formatDisplay(currentMonthTotal)} caption="Rolling six-month view" />
+                <StatCard label="Active hours" value={`${activeHours}`} caption="Hours with at least one intake today" />
+                <StatCard label="Consistency" value={`${consistencyDays}/7`} caption="Days at 80% of goal or better" />
+              </section>
+              <section className="panel">
+                <RhythmBoard monthlyData={monthlyData} dailyData={dailyData} hourlyData={hourlyData} unit={volumeUnit} darkMode={darkMode} />
+              </section>
+              <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+                <div className="panel">
+                  <p className="eyebrow">Daily trend</p>
+                  <h2 className="mt-2 text-xl font-semibold text-main">Cumulative intake across the day</h2>
+                  <div className="mt-5">
+                    <IntakeHistoryChart intakes={intakes} unit={volumeUnit} />
                   </div>
                 </div>
-              </div>
-              <div className="panel">
-                <p className="eyebrow">Context</p>
-                <h3 className="mt-2 text-xl font-semibold text-main">Keep the target realistic and easy to maintain</h3>
-                <div className="mt-5 grid gap-4 md:grid-cols-2">
-                  <InsightCard title="Current pace" body={intakes.length > 0 ? `Today you have logged ${intakes.length} entries and reached ${percentOfGoal.toFixed(0)}% of the target.` : 'No water has been logged yet today, so this is a good time to establish the baseline for the day.'} />
-                  <InsightCard title="Goal history" body={`${goalsLast30.length} goal records are retained locally so recent adjustments stay easy to review.`} />
-                </div>
-              </div>
-            </section>
-            <section className="panel">
-              <p className="eyebrow">Recent History</p>
-              <h3 className="mt-2 text-xl font-semibold text-main">Previous goal entries</h3>
-              <div className="mt-6 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-                <GoalHistoryCard entry={todayGoalEntry} highlighted formatGoalDate={formatGoalDate} formatValue={formatDisplay} />
-                {recentGoalEntries.length > 0 ? recentGoalEntries.map((entry) => (
-                  <GoalHistoryCard key={`${entry.dateKey}-${entry.timestamp}`} entry={entry} formatGoalDate={formatGoalDate} formatValue={formatDisplay} />
-                )) : (
-                  <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-sm text-soft dark:border-slate-700 dark:bg-slate-800/80">
-                    Additional goal history will appear here as you update your target on future dates.
-                  </div>
-                )}
-              </div>
-            </section>
-          </div>
-        )}
-        {section === 'Reminders' && (
-          <div className="space-y-6">
-            <section className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
-              <div className="panel">
-                <p className="eyebrow">Reminder Settings</p>
-                <h3 className="mt-2 text-xl font-semibold text-main">Keep reminders predictable</h3>
-                <div className="mt-6">
-                  <ReminderToggle enabled={remindersEnabled} interval={reminderInterval} onChange={onReminderChange} />
-                </div>
-              </div>
-              <div className="panel">
-                <p className="eyebrow">Preferences</p>
-                <div className="mt-5 space-y-4">
-                  <InsightCard title="Notification behavior" body="Browser notifications are requested only when reminders are enabled. Sound reminders can still help while the tab is open." />
-                  <InsightCard title="Daily reset" body="Entries belong to the active day. The app resets automatically when the date changes and can also be reset manually." />
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <button className="btn-secondary justify-center" onClick={toggleDark}>{darkMode ? 'Switch to light mode' : 'Switch to dark mode'}</button>
-                    <button className="btn-secondary justify-center" onClick={resetTodayIntakes}>Clear today&apos;s entries</button>
+                <div className="panel">
+                  <p className="eyebrow">Signals</p>
+                  <div className="mt-5 space-y-3">
+                    <InsightCard title="Goal coverage" body={remainingMl > 0 ? `You are ${formatDisplay(remainingMl)} away from your target today.` : `You are ${formatDisplay(surplusMl)} above your target today.`} />
+                    <InsightCard title="Logging rhythm" body={intakes.length > 0 ? `Your average entry is ${formatDisplay(dailyAverage)} across ${intakes.length} logs today.` : 'No intake pattern is available yet because nothing has been logged today.'} />
+                    <InsightCard title="Reminder support" body={remindersEnabled ? `Reminders are active every ${reminderInterval} minutes.` : 'Reminders are off, so hydration is currently tracked manually.'} />
                   </div>
                 </div>
-              </div>
-            </section>
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <StatCard label="Reminder status" value={remindersEnabled ? 'Enabled' : 'Disabled'} caption={remindersEnabled ? `Every ${reminderInterval} minutes` : 'No scheduled reminders'} />
-              <StatCard label="Theme" value={darkMode ? 'Dark' : 'Light'} caption="Applies immediately across the app" />
-              <StatCard label="Reset cadence" value="Daily" caption="Automatic on date change" />
-              <StatCard label="Manual reset" value="Available" caption="Clears only today&apos;s entries" />
-            </section>
-          </div>
-        )}
+              </section>
+            </div>
+          )}
+
+          {section === 'Goals' && (
+            <div className="space-y-5">
+              <section className="grid gap-5 xl:grid-cols-[420px_1fr]">
+                <div className="panel panel-accent">
+                  <p className="eyebrow">Current goal</p>
+                  <p className="mt-4 text-4xl font-semibold tracking-tight text-main">{formatDisplay(todayGoalEntry.goal)}</p>
+                  <p className="mt-2 text-sm text-muted">Active on {formatGoalDate(todayGoalEntry.dateKey)}</p>
+                  <div className="mt-6 space-y-5">
+                    <GoalSetter goalMl={goalMl} unit={volumeUnit} onChange={onGoalChange} />
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <MiniStat label="Consumed" value={formatDisplay(total)} />
+                      <MiniStat label="Remaining" value={formatDisplay(remainingMl)} />
+                    </div>
+                  </div>
+                </div>
+                <div className="panel">
+                  <p className="eyebrow">Context</p>
+                  <h2 className="mt-2 text-xl font-semibold text-main">Target management</h2>
+                  <div className="mt-5 grid gap-3 md:grid-cols-2">
+                    <InsightCard title="Current pace" body={intakes.length > 0 ? `Today you have logged ${intakes.length} entries and reached ${percentOfGoal.toFixed(0)}% of the target.` : 'No water has been logged yet today.'} />
+                    <InsightCard title="Goal history" body={`${goalsLast30.length} goal records are retained locally for recent adjustments.`} />
+                  </div>
+                </div>
+              </section>
+              <section className="panel">
+                <p className="eyebrow">Recent history</p>
+                <h2 className="mt-2 text-xl font-semibold text-main">Previous goal entries</h2>
+                <div className="mt-5 grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
+                  <GoalHistoryCard entry={todayGoalEntry} highlighted formatGoalDate={formatGoalDate} formatValue={formatDisplay} />
+                  {recentGoalEntries.length > 0 ? recentGoalEntries.map((entry) => (
+                    <GoalHistoryCard key={`${entry.dateKey}-${entry.timestamp}`} entry={entry} formatGoalDate={formatGoalDate} formatValue={formatDisplay} />
+                  )) : (
+                    <div className="empty-state">
+                      Additional goal history will appear here as you update your target on future dates.
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+          )}
+
+          {section === 'Reminders' && (
+            <div className="space-y-5">
+              <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
+                <div className="panel">
+                  <p className="eyebrow">Reminder settings</p>
+                  <h2 className="mt-2 text-xl font-semibold text-main">Notification cadence</h2>
+                  <div className="mt-5">
+                    <ReminderToggle enabled={remindersEnabled} interval={reminderInterval} onChange={onReminderChange} />
+                  </div>
+                </div>
+                <div className="panel">
+                  <p className="eyebrow">Preferences</p>
+                  <div className="mt-5 space-y-3">
+                    <InsightCard title="Notification behavior" body="Browser notifications are requested only when reminders are enabled." />
+                    <InsightCard title="Daily reset" body="Entries belong to the active day and reset automatically when the date changes." />
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <button className="btn-secondary justify-center" onClick={toggleDark}>{darkMode ? 'Light mode' : 'Dark mode'}</button>
+                      <button className="btn-secondary justify-center" onClick={resetTodayIntakes}>Clear today</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <StatCard label="Reminder status" value={remindersEnabled ? 'Enabled' : 'Disabled'} caption={remindersEnabled ? `Every ${reminderInterval} minutes` : 'No scheduled reminders'} />
+                <StatCard label="Theme" value={darkMode ? 'Dark' : 'Light'} caption="Applies immediately across the app" />
+                <StatCard label="Reset cadence" value="Daily" caption="Automatic on date change" />
+                <StatCard label="Manual reset" value="Available" caption="Clears only today's entries" />
+              </section>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   )
@@ -546,8 +524,8 @@ function HydraApp({ user }: { user: User }) {
 function StatCard({ label, value, caption }: { label: string; value: string; caption: string }) {
   return (
     <div className="panel p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-soft">{label}</p>
-      <p className="mt-3 text-3xl font-semibold tracking-tight text-main">{value}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-soft">{label}</p>
+      <p className="mt-3 text-2xl font-semibold tracking-tight text-main">{value}</p>
       <p className="mt-2 text-sm leading-6 text-muted">{caption}</p>
     </div>
   )
@@ -555,16 +533,16 @@ function StatCard({ label, value, caption }: { label: string; value: string; cap
 
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="surface-soft px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-soft">{label}</p>
-      <p className="mt-2 text-lg font-semibold text-main">{value}</p>
+    <div className="surface-soft px-4 py-3">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-soft">{label}</p>
+      <p className="mt-1 truncate text-base font-semibold text-main">{value}</p>
     </div>
   )
 }
 
 function InsightCard({ title, body }: { title: string; body: string }) {
   return (
-    <div className="surface-soft px-5 py-4">
+    <div className="surface-soft px-4 py-4">
       <p className="text-sm font-semibold text-main">{title}</p>
       <p className="mt-2 text-sm leading-6 text-muted">{body}</p>
     </div>
@@ -575,7 +553,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3 last:border-b-0 last:pb-0 dark:border-slate-800">
       <span className="text-soft">{label}</span>
-      <span className="text-right font-medium text-main">{value}</span>
+      <span className="truncate text-right font-medium text-main">{value}</span>
     </div>
   )
 }
@@ -592,11 +570,11 @@ function GoalHistoryCard({
   formatValue: (valueMl: number, compact?: boolean) => string
 }) {
   return (
-    <div className={`rounded-3xl border px-6 py-5 ${highlighted ? 'border-water-200 bg-gradient-to-br from-water-50 to-white text-water-900 dark:border-water-900/40 dark:from-slate-900 dark:to-slate-800 dark:text-water-100' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100'}`}>
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-soft">{highlighted ? 'Active goal' : 'Goal entry'}</p>
-      <div className="mt-4 text-3xl font-semibold tracking-tight">{formatValue(entry.goal)}</div>
-      <div className={`mt-2 text-sm ${highlighted ? 'text-water-800 dark:text-water-200' : 'text-soft'}`}>{formatGoalDate(entry.dateKey)}</div>
-      <div className="mt-2 text-xs text-slate-400 dark:text-slate-500">
+    <div className={highlighted ? 'goal-card goal-card-active' : 'goal-card'}>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-soft">{highlighted ? 'Active goal' : 'Goal entry'}</p>
+      <div className="mt-4 text-2xl font-semibold tracking-tight text-main">{formatValue(entry.goal)}</div>
+      <div className="mt-2 text-sm text-muted">{formatGoalDate(entry.dateKey)}</div>
+      <div className="mt-2 text-xs text-soft">
         Updated at {new Date(entry.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
       </div>
     </div>

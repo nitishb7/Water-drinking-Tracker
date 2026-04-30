@@ -26,7 +26,7 @@ export default function WaterFillCard({
 
   return (
     <div
-      className={`water-card relative overflow-hidden rounded-3xl text-white shadow-xl ${className}`}
+      className={`water-card relative overflow-hidden rounded-lg text-white ${className}`}
       style={{ ['--fill' as any]: `${pct}%` }}
       aria-label={`Water intake ${Math.round(pct)} percent of goal`}
       role="img"

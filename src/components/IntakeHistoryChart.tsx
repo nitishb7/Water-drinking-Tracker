@@ -45,7 +45,7 @@ export default function IntakeHistoryChart({ intakes, unit }: Props) {
 
   if (data.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-water-200 px-6 py-10 text-center text-sm text-soft dark:border-water-900/40">
+      <div className="rounded-lg border border-dashed border-water-200 px-6 py-10 text-center text-sm text-soft dark:border-water-900/40">
         Logged intakes will appear on this chart as you add them.
       </div>
     )

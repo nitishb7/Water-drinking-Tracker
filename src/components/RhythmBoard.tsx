@@ -150,13 +150,13 @@ export default function RhythmBoard({ monthlyData, dailyData, hourlyData, unit, 
             {view === 'hourly' && 'Hourly intake distribution'}
           </p>
         </div>
-        <div className="rounded-full border border-water-200 bg-water-50/70 px-1 py-1 text-xs text-water-700 dark:border-water-900/40 dark:bg-water-500/10 dark:text-water-200">
+        <div className="rounded-lg border border-slate-200 bg-slate-100 p-1 text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
           <div className="flex items-center gap-1">
             {VIEWS.map((option) => (
               <button
                 key={option.id}
-                className={`rounded-full px-3 py-1 transition ${
-                  view === option.id ? 'bg-white text-water-600 shadow-sm dark:bg-slate-800 dark:text-water-200' : 'text-water-500 dark:text-water-300'
+                className={`rounded-md px-3 py-1 transition ${
+                  view === option.id ? 'bg-white text-slate-950 shadow-sm dark:bg-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'
                 }`}
                 onClick={() => setView(option.id)}
               >
@@ -169,7 +169,7 @@ export default function RhythmBoard({ monthlyData, dailyData, hourlyData, unit, 
 
       {chartBody}
 
-      <div className="rounded-full border border-water-200 bg-white px-4 py-1 text-xs text-soft dark:border-water-900/40 dark:bg-slate-800">
+      <div className="rounded-md border border-slate-200 bg-white px-4 py-1 text-xs text-soft dark:border-slate-800 dark:bg-slate-950">
         Showing {view === 'monthly' ? '6 months' : view === 'daily' ? '7 daily snapshots' : '24 hourly slots'}
       </div>
     </div>

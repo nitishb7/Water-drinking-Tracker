@@ -16,19 +16,19 @@ export default function IntakeHistory({ intakes, unit, onRemove, title = "Today'
     <div className="space-y-3">
       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-soft">{title}</p>
       {intakes.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-soft dark:border-slate-700">
+        <div className="rounded-lg border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-soft dark:border-slate-700">
           No entries yet. Log your first glass to start the day.
         </div>
       ) : (
-        <ul className="rounded-[28px] border border-slate-100 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <ul className="rounded-lg border border-slate-100 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
           {intakes.map((entry, idx) => (
             <li
               key={entry.id}
               className={`flex items-center justify-between px-4 py-3 ${idx !== intakes.length - 1 ? 'border-b border-slate-100 dark:border-slate-700' : ''}`}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-water-50">
-                  <span className="h-3 w-3 rounded-full bg-water-500" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-water-50">
+                  <span className="h-3 w-3 rounded-sm bg-water-500" />
                 </div>
                 <div>
                   <div className="text-base font-semibold text-main">{formatVolume(entry.amount, unit)}</div>

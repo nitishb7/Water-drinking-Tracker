@@ -56,7 +56,7 @@ export default function ReminderToggle({ enabled, interval, onChange }: Props) {
           </select>
         </div>
 
-        <label className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-muted dark:border-slate-700 dark:bg-slate-800">
+        <label className="inline-flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-muted dark:border-slate-700 dark:bg-slate-800">
           <input type="checkbox" checked={sound} onChange={(e) => setSound(e.target.checked)} />
           Play a sound while this tab is open
         </label>
